@@ -29,5 +29,6 @@ pm2 install pm2-logrotate &
 popd
 openssl req -subj "/C=IT/ST=Pool/L=Daemon/O=Mining Pool/CN=mining.proxy" -newkey rsa:2048 -nodes -keyout cert.key -x509 -out cert.pem -days 36500
 npm install
+npm update
 cp config_example.json config.json
 echo "You're setup with a shiny new proxy!  Now, go configure it and have fun."
