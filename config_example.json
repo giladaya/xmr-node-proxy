@@ -1,4 +1,5 @@
 {
+  "logDir": "/var/log/xmr-node-proxy",
   "pools": [
     {
       "hostname": "pool.supportxmr.com",

@@ -6,7 +6,26 @@ const fs = require('fs');
 const async = require('async');
 const uuidV4 = require('uuid/v4');
 const support = require('./lib/support.js')();
+const winston = require('winston');
 global.config = require('./config.json');
+
+// Create the log directory if it does not exist
+if (!fs.existsSync(global.config.logDir)) {
+    fs.mkdirSync(global.config.logDir);
+}
+global.shareLogger = new winston.Logger({
+    level: 'info',
+    // format: winston.format.json(),
+    transports: [
+        new winston.transports.File({ 
+            filename: global.config.logDir + '/shares.log', 
+            level: 'info' 
+        }),
+        // new winston.transports.Console({ 
+        //     level: 'info' 
+        // }),
+    ]
+});
 
 
 /*
@@ -74,6 +93,7 @@ function masterMessageHandler(worker, message, handle) {
                 }
                 break;
             case 'workerStats':
+                debug.miners('Got stats: ', JSON.stringify(message.data));
                 activeWorkers[worker.id][message.minerID] = message.data;
                 break;
         }
@@ -744,6 +764,7 @@ function Miner(id, params, ip, pushMessage, portData, minerSocket) {
     this.password = params.pass;  // Documentation purposes only.
     this.agent = params.agent;  // Documentation purposes only.
     this.ip = ip;  // Documentation purposes only.
+    this.rigName = ip;
     this.socket = minerSocket;
     this.messageSender = pushMessage;
     this.error = "";
@@ -763,6 +784,15 @@ function Miner(id, params, ip, pushMessage, portData, minerSocket) {
         this.valid_miner = false;
     }
 
+    const passSplit = this.password.split(".");
+    if (passSplit.length > 1) {
+        this.rigName = passSplit[1];
+    } else if (passSplit.length > 3) {
+        this.error = "Too many options in the password field";
+        this.valid_miner = false;
+    }
+
+    // console.log(activePools[this.pool]);
     if (activePools[this.pool].activeBlocktemplate === null){
         this.error = "No active block template";
         this.valid_miner = false;
@@ -937,6 +967,20 @@ function handleMinerData(method, params, ip, portData, sendReply, pushMessage, m
             let now = Date.now() / 1000 || 0;
             miner.shareTimeBuffer.enq(now - miner.lastShareTime);
             miner.lastShareTime = now;
+
+            const shareInfo = {
+                pool: miner.pool,
+                difficulty: job.difficulty,
+                rigName: miner.rigName,
+                ip: miner.ip,
+                id: miner.id,
+                totalShares: miner.shares,
+                totalHashes: miner.hashes,
+                avgSpeed: Math.floor(miner.hashes/(Math.floor((Date.now() - miner.connectTime)/1000))),
+                coin: miner.coin,
+            }
+            debug.miners('Found new share: ' + JSON.stringify(shareInfo)); 
+            global.shareLogger.log('info', shareInfo);
 
             sendReply(null, {status: 'OK'});
             break;
