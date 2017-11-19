@@ -3,3 +3,6 @@ node_modules/
 npm-debug.log
 cert*
 config.json
+.vagrant/
+*.log
+
