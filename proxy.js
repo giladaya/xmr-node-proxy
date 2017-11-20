@@ -792,6 +792,11 @@ function Miner(id, params, ip, pushMessage, portData, minerSocket) {
         this.valid_miner = false;
     }
 
+    if (activePools[this.pool] === undefined || activePools[this.pool] === null){
+        this.error = "Unknown pool " + this.pool;
+        this.valid_miner = false;
+    }
+
     // console.log(activePools[this.pool]);
     if (activePools[this.pool].activeBlocktemplate === null){
         this.error = "No active block template";
@@ -976,6 +981,7 @@ function handleMinerData(method, params, ip, portData, sendReply, pushMessage, m
                 id: miner.id,
                 totalShares: miner.shares,
                 totalHashes: miner.hashes,
+                totalBlocks: miner.blocks,
                 avgSpeed: Math.floor(miner.hashes/(Math.floor((Date.now() - miner.connectTime)/1000))),
                 coin: miner.coin,
             }
