@@ -1,5 +1,7 @@
 {
   "logDir": "/var/log/xmr-node-proxy",
+  "reportApiUrl": "http://api.shares.com",
+  "reportApiToken": "123123",
   "pools": [
     {
       "hostname": "pool.supportxmr.com",
