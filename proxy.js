@@ -886,7 +886,7 @@ function handleShareFind(shareInfo) {
         axios.post(url, shareInfo)
         .then(function (response) {
             debug.miners('New share reported');
-            console.log(response);
+            // console.log(response);
         })
         .catch(function (error) {
             console.error(error);
