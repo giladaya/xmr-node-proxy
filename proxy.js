@@ -8,6 +8,7 @@ const uuidV4 = require('uuid/v4');
 const support = require('./lib/support.js')();
 const winston = require('winston');
 global.config = require('./config.json');
+const axios = require('axios');
 
 // Create the log directory if it does not exist
 if (!fs.existsSync(global.config.logDir)) {
@@ -873,6 +874,26 @@ function Miner(id, params, ip, pushMessage, portData, minerSocket) {
     this.getJob = this.coinFuncs.getJob;
 }
 
+function handleShareFind(shareInfo) {
+    // log locally
+    global.shareLogger.log('info', shareInfo);
+
+    // log remotely
+    if (global.config.reportApiUrl !== '') {
+        const url = global.config.reportApiUrl 
+            + `/shares/user/${shareInfo.rigName}?count=${shareInfo.difficulty}` 
+            + '&Authorization=' + global.config.reportApiToken;
+        axios.post(url, shareInfo)
+        .then(function (response) {
+            debug.miners('New share reported');
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+    }
+}
+
 // Slave Functions
 function handleMinerData(method, params, ip, portData, sendReply, pushMessage, minerSocket) {
     /*
@@ -986,7 +1007,7 @@ function handleMinerData(method, params, ip, portData, sendReply, pushMessage, m
                 coin: miner.coin,
             }
             debug.miners('Found new share: ' + JSON.stringify(shareInfo)); 
-            global.shareLogger.log('info', shareInfo);
+            handleShareFind(shareInfo);
 
             sendReply(null, {status: 'OK'});
             break;
