@@ -5,4 +5,4 @@ cert*
 config.json
 .vagrant/
 *.log
-
+logs/

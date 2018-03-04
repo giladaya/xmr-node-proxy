@@ -10,18 +10,41 @@ const winston = require('winston');
 global.config = require('./config.json');
 const axios = require('axios');
 
+function pingSharesApi(logger) {
+    const url = global.config.reportApiUrl + '/healthcheck';
+    console.log('ping ' + url);
+    axios.get(url)
+    .then(function (response) {
+        console.log('Got response from shares api')
+        logger.log('info', 'Got response from shares api');
+    })
+    .catch(function (error) {
+        console.error(error);
+        logger.log('error', 'No response from shares api')
+    });
+}
+
 // Create the log directory if it does not exist
 if (!fs.existsSync(global.config.logDir)) {
     fs.mkdirSync(global.config.logDir);
+}
+const DailyRotateFile = require('winston-daily-rotate-file');
+const dailyTransportOpts = {
+    filename: __dirname + '/logs/shares.log', 
+    datePattern: '.yyyy-MM-dd',
+    zippedArchive: true,
+    maxDays: 10,
+    level: process.env.ENV === 'development' ? 'debug' : 'info'
 }
 global.shareLogger = new winston.Logger({
     level: 'info',
     // format: winston.format.json(),
     transports: [
-        new winston.transports.File({ 
-            filename: global.config.logDir + '/shares.log', 
-            level: 'info' 
-        }),
+        new DailyRotateFile(dailyTransportOpts),
+        // new winston.transports.File({ 
+        //     filename: global.config.logDir + '/shares.log', 
+        //     level: 'info' 
+        // }),
         // new winston.transports.Console({ 
         //     level: 'info' 
         // }),
@@ -1222,6 +1245,9 @@ if (cluster.isMaster) {
     connectPools();
     setInterval(enumerateWorkerStats, 15000);
     setInterval(balanceWorkers, 90000);
+    
+    global.shareLogger.log('info', 'log created');
+    pingSharesApi(global.shareLogger);
 } else {
     /*
     setInterval(checkAliveMiners, 30000);
