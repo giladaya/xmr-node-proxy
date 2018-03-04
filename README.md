@@ -47,6 +47,20 @@ or using the pm2 monitor
 pm2 monit
 ```
 
+## Using docker
+### Setup
+install docker
+git clone
+
+### run
+`sudo NODE_ENV=production docker-compose up -d`
+
+### Update
+```bash
+git pull
+sudo NODE_ENV=production docker-compose up -d --no-deps --build node1
+```
+
 ## Known Issues
 
 VMs with 512Mb or less RAM will need some swap space in order to compile the C extensions for node.  Bignum and the CN libraries can chew through some serious memory during compile.  In regards to this, one of our users has put together a guide for T2.Micro servers: https://docs.google.com/document/d/1m8E4_pDwKuFo0TnWJaO13LDHqOmbL6YrzyR6FvzqGgU (Credit goes to MayDay30 for his work with this!)
