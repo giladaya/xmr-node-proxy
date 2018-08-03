@@ -4,7 +4,7 @@
 ## Setup Instructions
 
 ### fork
-Follow original instructions, then:
+Follow [original instructions](https://moneroocean.blogspot.com/2017/10/setup-of-xmr-node-proxy-on-free-tier.html), then:
 
 ```
 cd xmr-node-proxy
