@@ -3,6 +3,16 @@
 
 ## Setup Instructions
 
+### fork
+Follow original instructions, then:
+
+```
+cd xmr-node-proxy
+git remote set-url origin https://github.com/MoneroOcean/xmr-node-proxy.git 
+git pull -X theirs --no-edit
+npm update
+```
+
 Based on a clean Ubuntu 16.04 LTS minimal install
 
 ## Deployment via Installer
@@ -129,3 +139,9 @@ Please contact Snipa at: proxy_installs@snipanet.com or via IRC on irc.freenode.
 * [XMRPool.eu](https://xmrpool.eu)
 
 If you'd like to have your pool added, please make a pull request here, or contact Snipa on IRC!
+
+## machine cleanup
+
+`rm /home/ubuntu/.pm2/logs/*.log`
+`sudo apt-get -f install`
+`sudo apt-get autoremove`
