@@ -25,12 +25,15 @@ function pingSharesApi(logger) {
 }
 
 // Create the log directory if it does not exist
-if (!fs.existsSync(global.config.logDir)) {
-    fs.mkdirSync(global.config.logDir);
+const logDir = __dirname + '/logs'
+// const logDir = global.config.logDir;
+if (!fs.existsSync(logDir)) {
+    console.log('Creating missing logs dir ' + logDir)
+    fs.mkdirSync(logDir);
 }
 const DailyRotateFile = require('winston-daily-rotate-file');
 const dailyTransportOpts = {
-    filename: __dirname + '/logs/shares.log', 
+    filename: logDir + '/shares.log', 
     datePattern: '.yyyy-MM-dd',
     zippedArchive: true,
     maxDays: 10,

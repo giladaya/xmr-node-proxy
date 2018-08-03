@@ -47,6 +47,12 @@ or using the pm2 monitor
 pm2 monit
 ```
 
+Configure pm2 log rotation
+```
+pm2 install pm2-logrotate
+pm2 set pm2-logrotate:retain 30
+```
+
 ## Using docker
 ### Setup
 install docker
